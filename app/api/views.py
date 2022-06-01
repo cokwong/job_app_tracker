@@ -180,34 +180,3 @@ def set_application_status(table_id, app_id):
     app.status.append(app_status)
     db.session.commit()
     return jsonify(success=True)
-
-from flask import Blueprint, abort, jsonify, request
-from bs4 import BeautifulSoup
-from flair.data import Sentence
-from flair.models import SequenceTagger
-import requests
-
-model = SequenceTagger.load("ner_model/best-model.pt")
-parse = Blueprint('api/parse', __name__, url_prefix='/api/parse')
-
-@applications.route('/parse', methods=['POST'])
-def get():
-    print(request)
-    data = request.get_json()
-    print('ssw')
-    url = data.get('url')
-    print(data, 's')
-    if not url:
-        abort(400)
-
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, features="html.parser")
-    text = soup.find('title').text
-    print(text)
-    se = Sentence(text)
-    model.predict(se)
-
-    for entity in se.get_spans('ner'):
-        print(entity.text, entity.get_label("ner").value, entity.get_label("ner").score)
-
-    return jsonify(success=True)
