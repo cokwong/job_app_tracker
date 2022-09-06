@@ -35,7 +35,7 @@ def get_tables(id=''):
     user_id = get_user_id()
     if id:
         table = UserApplicationTables.query.get_or_404(id=id)
-        if table.id != user_id:
+        if table.user_id != user_id:
             abort(403)
         return jsonify(serialize.table(table, include_apps=True))
     else:
@@ -81,7 +81,8 @@ def edit_tables(id):
 def delete_tables(id):
     user_id = get_user_id()
     table = UserApplicationTables.query.get_or_404(id)
-    if table.id != user_id:
+    print(table.user_id, user_id)
+    if table.user_id != user_id:
         abort(403)
     db.session.delete(table)
     db.session.commit()

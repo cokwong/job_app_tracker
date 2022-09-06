@@ -15,7 +15,10 @@ def get():
         abort(400)
     r = requests.get(url)
     soup = BeautifulSoup(r.text, features="html.parser")
-    text = soup.find('title').text
+    content = soup.find('title')
+    if not content:
+        return jsonify({})
+    text = content.text
     se = Sentence(text)
     model.predict(se)
 
